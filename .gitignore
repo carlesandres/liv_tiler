@@ -1,0 +1,4 @@
+node_modules
+.next
+Session.vim
+yarn-error.log
