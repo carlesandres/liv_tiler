@@ -16,5 +16,79 @@
   },
   "devDependencies": {
     "eslint": "^4.19.0"
+  },
+  "eslintConfig": {
+    "plugins": [
+      "react",
+      "prettier"
+    ],
+    "extends": [
+      "eslint:recommended",
+      "plugin:react/recommended",
+      "prettier"
+    ],
+    "parserOptions": {
+      "ecmaVersion": 8,
+      "sourceType": "module",
+      "ecmaFeatures": {
+        "jsx": true,
+        "impliedStrict": true,
+        "experimentalObjectRestSpread": true
+      },
+      "allowImportExportEverywhere": true
+    },
+    "env": {
+      "es6": true,
+      "browser": true,
+      "node": true
+    },
+    "rules": {
+      "func-names": [
+        "error",
+        "as-needed"
+      ],
+      "no-shadow": "error",
+      "no-extra-semi": 0,
+      "react/prop-types": 0,
+      "react/react-in-jsx-scope": 0,
+      "react/no-unescaped-entities": 0,
+      "react/jsx-no-target-blank": 0,
+      "react/no-string-refs": 0,
+      "prettier/prettier": [
+        "error",
+        {
+          "printWidth": 120,
+          "tabWidth": 2,
+          "singleQuote": true,
+          "trailingComma": "none",
+          "bracketSpacing": false,
+          "semi": true,
+          "useTabs": false,
+          "parser": "babylon",
+          "jsxBracketSameLine": false
+        }
+      ]
+    },
+    "overrides": [
+      {
+        "files": "app/config/config-default.js",
+        "rules": {
+          "prettier/prettier": [
+            "error",
+            {
+              "printWidth": 120,
+              "tabWidth": 2,
+              "singleQuote": true,
+              "trailingComma": "es5",
+              "bracketSpacing": false,
+              "semi": true,
+              "useTabs": false,
+              "parser": "babylon",
+              "jsxBracketSameLine": false
+            }
+          ]
+        }
+      }
+    ]
   }
 }
