@@ -109,14 +109,32 @@ class App extends React.Component {
 
   render() {
     return (
-      <div>
-        <style jsx>{`
-          input {
-            display: block;
+      <div className="container">
+        <style jsx global>{`
+          .container {
+            max-width: 800px;
+            text-align: center;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+          }
+
+          input, button {
+            margin: 10px;
+            max-width: 200px;
           }
 
           canvas {
             background: white;
+          }
+
+          .preview {
+            margin-top: 20px;
+          }
+
+          .preview > div {
+            font-size: 12px;
+            margin-bottom: 5px;
           }
         `}
       </style>
