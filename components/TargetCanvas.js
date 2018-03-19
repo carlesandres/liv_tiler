@@ -15,9 +15,6 @@ class TargetCanvas extends React.Component {
       return;
     }
 
-    console.log('image', image);
-    console.log('size', size);
-
     const ctx = this.target.getContext('2d');
     ctx.drawImage(image, 0, 0, size, size);
   }
