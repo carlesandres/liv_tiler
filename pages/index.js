@@ -152,7 +152,7 @@ class App extends React.Component {
           }
         `}
       </style>
-      <h1>Leggings pattern generator</h1>
+      <h1>Liv Tiler: Leggings pattern generator</h1>
       <div className="flex-row">
         <input
           className="button"
