@@ -4,24 +4,32 @@ class App extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = { image: null };
+    this.state = {
+      image: null,
+      filename: '',
+      repeatX: 6,
+      repeatY: 8
+    };
+
     this.targetCanvases = [];
     this.onChange = this.onChange.bind(this);
     this.afterLoad = this.afterLoad.bind(this);
     this.addTargetCanvasRef = this.addTargetCanvasRef.bind(this);
     this.download = this.download.bind(this);
+    this.onChangeRepeatVal = this.onChangeRepeatVal.bind(this);
   }
 
-  async componentDidMount() {
+  componentDidMount() {
     const image = new Image();
     image.onload = this.afterLoad;
     this.setState({ image });
-
-    this.jszip = await import('jszip');
   }
 
   onChange(event) {
     var file = event.target.files[0];
+    this.setState({
+      filename: file.name
+    });
     this.state.image.src = URL.createObjectURL(file);
   }
 
@@ -44,12 +52,14 @@ class App extends React.Component {
       return null;
     }
 
-    const sizes = [32, 64, 128];
+    const sizes = [400];
 
     const canvases = sizes.map( size =>
       <TargetCanvas
         ref={ this.addTargetCanvasRef }
         size={size}
+        repeatX={this.state.repeatX}
+        repeatY={this.state.repeatY}
         key={`${size}`}
         image={image}
       />
@@ -58,53 +68,35 @@ class App extends React.Component {
     return canvases;
   }
 
-  dataURLtoBlob(dataurl) {
-    var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
-      bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
-    while(n--){
-      u8arr[n] = bstr.charCodeAt(n);
-    }
-    return new Blob([u8arr], {type:mime});
-  }
-
-  // TO-DO: Make async-await
   download(){
-    const zipFile = new this.jszip();
+    const canvas = this.targetCanvases[0];
 
-    const promises = this.targetCanvases.filter( x => x )
-      .map( (canvas, index) => {
-        const dataURL = canvas.target.toDataURL('image/png', 1.0);
-        const blob = this.dataURLtoBlob(dataURL);
-        const reader = new FileReader();
-        const promise = new Promise( (resolve, reject) => {
-          reader.addEventListener("loadend", function() {
-            return resolve(reader.result);
-          });
-        });
-        reader.readAsArrayBuffer(blob);
-        return promise;
-      });
+    const strData = canvas.target.toDataURL('image/png', 1.0);
+    const strDownloadMime = 'image/octet-stream';
+    const uri = (strData.replace('image/png', strDownloadMime));
+    const link = document.createElement('a');
+    const { repeatX, repeatY } = this.state;
 
-    Promise.all(promises).then( results => {
-      results.forEach( (file, index) => {
-        zipFile.file( `aaa${index}.png`,file);
-      });
-
-      zipFile.generateAsync({type:"base64"}).then(function (base64) {
-        window.location = "data:application/zip;base64," + base64;
-      });
-    });
+    link.download = `${repeatX} by ${repeatY} tiles of ${this.state.filename}`;
+    link.href = uri;
+    link.click();
   }
 
   renderDownloadButton() {
-    const { image } = this.state;
+    const { image, filename } = this.state;
     if (!image || !image.src) {
       return null;
     }
 
     return (
-      <button onClick={this.download}>Download</button>
+      <div className="button" onClick={this.download}>Download tiles file</div>
     );
+  }
+
+  onChangeRepeatVal(event) {
+    this.setState({
+      [event.target.name]: parseInt(event.target.value, 10)
+    });
   }
 
   render() {
@@ -121,7 +113,21 @@ class App extends React.Component {
 
           input, button {
             margin: 10px;
+            padding: 10px;
             max-width: 200px;
+          }
+
+          .button {
+            background: lightblue;
+            border-radius: 5px;
+            padding: 10px;
+            border: 1px solid blue;
+            display: inline-block;
+          }
+
+          .button:hover {
+            background: lightgrey;
+            cursor: pointer;
           }
 
           canvas {
@@ -136,14 +142,38 @@ class App extends React.Component {
             font-size: 12px;
             margin-bottom: 5px;
           }
+
+          .repeatVal {
+            display: inline-block;
+          }
+
+          .flex-row {
+            display: flex;
+          }
         `}
       </style>
-      <h1>IconFist</h1>
-      <h2>Create favicons quickly</h2>
-      <input
-        type="file"
-        onChange={this.onChange}
-        accept="image/*" />
+      <h1>Leggings pattern generator</h1>
+      <div className="flex-row">
+        <input
+          className="button"
+          type="file"
+          onChange={this.onChange}
+          accept="image/*" />
+        <div className="repeatVal">
+          <label>cols</label>
+          <input type="number"
+            name="repeatX"
+            onChange={this.onChangeRepeatVal}
+            value={this.state.repeatX} />
+        </div>
+        <div className="repeatVal">
+          <label>rows</label>
+          <input type="number"
+            name="repeatY"
+            onChange={this.onChangeRepeatVal}
+            value={this.state.repeatY} />
+        </div>
+      </div>
       {this.renderDownloadButton()}
       {this.getTargetCanvases()}
 
